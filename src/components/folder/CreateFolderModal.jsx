@@ -15,7 +15,7 @@ const CreateFolderModal = () => {
 
     const { data: session } = useSession();
     const { setShowToastMsg } = useContext(toastContext);
-    const {setLoading} = useContext(loadingContext);
+    const { setLoading } = useContext(loadingContext);
 
     const [folderId, setFolderId] = useState(0);
     const pathname = usePathname();
@@ -41,6 +41,7 @@ const CreateFolderModal = () => {
         setLoading(false);
         setFolderName("");
         setShowToastMsg("Folder created");
+        window.create_folder_modal.close();
     };
 
     return (
@@ -50,7 +51,11 @@ const CreateFolderModal = () => {
                 onSubmit={onCreate}
                 className="modal-box p-9 items-center"
             >
-                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => console.log("first")}>
+                <button
+                    className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                    onClick={() => window.create_folder_modal.close()}
+                    type="button"
+                >
                     ✕
                 </button>
                 <div className="w-full items-center flex flex-col justify-center gap-3">
