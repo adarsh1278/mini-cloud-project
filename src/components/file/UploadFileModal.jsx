@@ -11,9 +11,10 @@ import { loadingContext } from "@/context/LoadingContext";
 const UploadFileModal = ({ closeModal }) => {
     const { data: session } = useSession();
     const [folderId, setFolderId] = useState(0);
+    const [dragActive, setDragActive] = useState(false);
     const pathname = usePathname();
     const { setShowToastMsg } = useContext(toastContext);
-    const {setLoading} = useContext(loadingContext)
+    const { setLoading } = useContext(loadingContext);
 
     useEffect(() => {
         if (pathname.startsWith("/folder")) {
@@ -27,6 +28,7 @@ const UploadFileModal = ({ closeModal }) => {
     const db = getFirestore(app);
     const storage = getStorage(app);
     const docId = Date.now();
+
     const onFileUpload = async (file) => {
         setLoading(true);
         const fileRef = ref(storage, "/files/" + file.name);
@@ -48,60 +50,97 @@ const UploadFileModal = ({ closeModal }) => {
                     });
 
                     closeModal(true);
-                    setShowToastMsg("File uploaded");
+                    setShowToastMsg("File uploaded successfully");
                     setLoading(false);
                 });
             });
     };
 
+    // Handle drag events
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    // Triggers when file is dropped
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            onFileUpload(e.dataTransfer.files[0]);
+        }
+    };
+
     return (
-        <div>
+        <div className="modal-content">
             <form
                 method="dialog"
-                className="modal-box p-9 items-center w-[360px]"
+                className="relative bg-white dark:bg-gray-800 rounded-xl p-6 shadow-xl max-w-md w-full mx-auto"
+                onDragEnter={handleDrag}
             >
-                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                    ✕
+                <button
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                    onClick={closeModal}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
-                <div className="w-full items-center flex flex-col justify-center gap-3">
-                    <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <svg
-                                    className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 20 16"
-                                >
-                                    <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                                    />
-                                </svg>
-                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <span className="font-semibold">
-                                        Click to upload
-                                    </span>{" "}
-                                    or drag and drop
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    SVG, PNG, JPG or GIF (MAX. 800x400px)
-                                </p>
-                            </div>
-                            <input
-                                id="dropzone-file"
-                                type="file"
-                                className="hidden"
-                                onChange={(e) =>
-                                    onFileUpload(e.target.files[0])
-                                }
+
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Upload File</h3>
+
+                <div
+                    className={`w-full flex flex-col items-center justify-center border-2 ${dragActive ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700'} border-dashed rounded-xl p-8 transition-all`}
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                >
+                    <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full">
+                        <svg
+                            className="w-10 h-10 text-blue-500"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                             />
-                        </label>
+                        </svg>
                     </div>
+
+                    <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <span className="font-bold">Click to upload</span> or drag and drop
+                    </p>
+
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                        PDF, DOC, JPG, PNG or any other file type
+                    </p>
+
+                    <input
+                        type="file"
+                        id="file-upload"
+                        className="hidden"
+                        onChange={(e) => onFileUpload(e.target.files[0])}
+                    />
+
+                    <button
+                        type="button"
+                        onClick={() => document.getElementById('file-upload').click()}
+                        className="btn btn-primary mt-6"
+                    >
+                        Select File
+                    </button>
                 </div>
             </form>
         </div>

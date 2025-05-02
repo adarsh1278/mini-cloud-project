@@ -13,7 +13,7 @@ const AccountInfo = () => {
 
     const { setLoading } = useContext(loadingContext);
     useEffect(() => {
-        if(ss.status === 'loading') {
+        if (ss.status === 'loading') {
             setLoading(true);
         }
         else {
@@ -24,39 +24,46 @@ const AccountInfo = () => {
     const handleLogout = (e) => {
         e.preventDefault();
         signOut();
-        setShowToastMsg("Signing out.");
+        setShowToastMsg("Signing out");
     };
 
     return (
         <div>
             {session ? (
                 <div className="flex justify-between items-center">
-                    <div className="flex gap-2 items-center">
-                        <Image
-                            src={session.user.image}
-                            alt="user-image"
-                            width={40}
-                            height={40}
-                            className="rounded-full"
-                        />
+                    <div className="flex gap-3 items-center">
+                        <div className="relative">
+                            <Image
+                                src={session.user.image}
+                                alt="user-image"
+                                width={44}
+                                height={44}
+                                className="rounded-full border-2 border-white dark:border-gray-700 shadow-sm"
+                            />
+                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-700 rounded-full"></span>
+                        </div>
                         <div>
-                            <h2 className="text-[15px] font-bold text-[#eeeeee]">
+                            <h2 className="text-[15px] font-semibold text-gray-800 dark:text-gray-200">
                                 {session.user.name}
                             </h2>
-                            <h2 className="text-[13px] text-gray-400 mt-[-4px]">
+                            <h2 className="text-[13px] text-gray-500 dark:text-gray-400">
                                 {session.user.email}
                             </h2>
                         </div>
                     </div>
-                    <div className="bg-blue-200 p-2 rounded-lg cursor-pointer">
+                    <button
+                        onClick={handleLogout}
+                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all group"
+                        aria-label="Sign Out"
+                        title="Sign Out"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            onClick={handleLogout}
+                            strokeWidth={1.7}
                             stroke="currentColor"
-                            className="w-6 h-6 text-blue-500 hover:animate-pulse transition-all "
+                            className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors"
                         >
                             <path
                                 strokeLinecap="round"
@@ -64,7 +71,7 @@ const AccountInfo = () => {
                                 d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
                             />
                         </svg>
-                    </div>
+                    </button>
                 </div>
             ) : null}
         </div>

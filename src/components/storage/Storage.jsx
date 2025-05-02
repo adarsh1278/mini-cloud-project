@@ -6,18 +6,19 @@ import { useRouter } from "next/navigation";
 const Storage = () => {
     const router = useRouter();
     return (
-        <div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-5">
             <AccountInfo />
             <StorageInfo />
-            <div className="p-3 bg-[#2a323c] rounded-lg text-center mt-5 bottom-0">
-                <h2 className="font-semibold text-[17px] text-[#a6adba]">
+
+            <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-5 border border-blue-100 dark:border-blue-900/30">
+                <h2 className="font-semibold text-lg text-gray-800 dark:text-gray-200">
                     Need More Space?
                 </h2>
-                <h2 className="text-[13px] text-[#eeeeee]">
-                    Get more space my upgrading the plan
-                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    Get more storage by upgrading your plan
+                </p>
                 <button
-                    className="bg-blue-500 p-2 px-4 text-[14px] rounded-lg mt-3"
+                    className="btn btn-primary mt-4 w-full"
                     onClick={() => router.push("/plans")}
                 >
                     Upgrade Plan

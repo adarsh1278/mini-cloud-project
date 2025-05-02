@@ -8,38 +8,48 @@ import {
 } from "firebase/firestore";
 
 export const fetchFiles = async (session) => {
-    let files = [];
+    try {
+        const db = getFirestore(app);
 
-    const db = getFirestore(app);
+        const q = query(
+            collection(db, "files"),
+            where("createdBy", "==", session.user.email)
+        );
 
-    const q = query(
-        collection(db, "files"),
-        where("createdBy", "==", session.user.email)
-    );
+        const querySnapshot = await getDocs(q);
 
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-        files.push(doc.data());
-        // console.log(doc.id, " => ", doc.data());
-    });
-    return files;
+        const files = [];
+        querySnapshot.forEach((doc) => {
+            files.push(doc.data());
+        });
+
+        return files;
+    } catch (error) {
+        console.error("Error fetching files:", error);
+        return []; // Optional: return empty array on error
+    }
 };
 
 export const fetchSubFiles = async (session, id) => {
-    let files = [];
+    try {
+        const db = getFirestore(app);
 
-    const db = getFirestore(app);
+        const q = query(
+            collection(db, "files"),
+            where("createdBy", "==", session.user.email),
+            where("parentFolderId", "==", id)
+        );
 
-    const q = query(
-        collection(db, "files"),
-        where("createdBy", "==", session.user.email),
-        where("parentFolderId", "==", id)
-    );
+        const querySnapshot = await getDocs(q);
 
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-        files.push(doc.data());
-        // console.log(doc.id, " => ", doc.data());
-    });
-    return files;
+        const files = [];
+        querySnapshot.forEach((doc) => {
+            files.push(doc.data());
+        });
+
+        return files;
+    } catch (error) {
+        console.error(`Error fetching sub-files for folder ${id}:`, error);
+        return []; // Optional: return empty array on error
+    }
 };

@@ -11,37 +11,38 @@ import AboutDeveloper from "./AboutDeveloper";
 
 const AppLayout = ({ children }) => {
     const { showToastMsg } = useContext(toastContext);
-    const {loading} = useContext(loadingContext)
+    const { loading } = useContext(loadingContext);
+
     return (
         <SessionProvider>
-            <div className="flex relative">
-                <RingLoader
-                    loading={loading}
-                    cssOverride={{
-                        // border: "1px solid white",
-                        position: "absolute",
-                        top: "0",
-                        bottom: "0",
-                        left: "0",
-                        right: "0",
-                        margin: "auto",
-                        zIndex: "12",
-                        width: "100px",
-                    }}
-                    color="#ffffff"
-                    size={100}
-                />
-                <SideNavBar />
-                <div className="grid grid-cols-1 lg:grid-cols-3 w-full bg-[#1d232a]">
-                    <div className="col-span-2">
-                        <div className="relative">{children}</div>
+            <div className="flex relative min-h-screen bg-gray-50 dark:bg-gray-900">
+                {/* Loading overlay */}
+                {loading && (
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                        <RingLoader
+                            loading={loading}
+                            color="#3b82f6"
+                            size={80}
+                        />
                     </div>
-                    <div className=" p-5 order-first md:order-last space-y-5">
+                )}
+
+                {/* Sidebar */}
+                <SideNavBar />
+
+                {/* Main content */}
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+                    <div className="lg:col-span-2">
+                        <div className="w-full">{children}</div>
+                    </div>
+
+                    <div className="space-y-6">
                         <Storage />
                         <AboutDeveloper />
                     </div>
                 </div>
             </div>
+
             {showToastMsg && <Toast msg={showToastMsg} />}
         </SessionProvider>
     );
